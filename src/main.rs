@@ -1,4 +1,6 @@
 use iced::{Application, Command, Settings, Theme};
+use rand::distributions::Uniform;
+use rand::Rng;
 
 fn main() -> iced::Result {
     AlgorithmsVisualizer::run(Settings::default())
@@ -36,9 +38,9 @@ impl Application for AlgorithmsVisualizer {
 fn bubble_sort(array: &mut [i32]) -> &mut [i32] {
     loop {
         let mut swapped = false;
-        for i in 0..array.len() - 1 {
-            if array[i] > array[i + 1] {
-                (array[i], array[i + 1]) = (array[i + 1], array[i]);
+        for i in 1..array.len() {
+            if array[i - 1] > array[i] {
+                array.swap(i - 1, i);
                 swapped = true;
             }
         }
@@ -50,6 +52,11 @@ fn bubble_sort(array: &mut [i32]) -> &mut [i32] {
     array
 }
 
+fn gen_random_vector(min: i32, max: i32, length: usize) -> Vec<i32> {
+    let range = Uniform::new(min, max);
+    rand::thread_rng().sample_iter(&range).take(length).collect()
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -57,8 +64,9 @@ mod tests {
 
     #[test]
     fn bubble_sort_test() {
-        let array = &mut [3, 2, 1];
-        let sorted = &[1, 2, 3];
+        let mut array = gen_random_vector(-1000, 1000, 100);
+        let mut sorted = array.clone();
+        sorted.sort();
         assert_eq!(bubble_sort(array), sorted)
     }
 
